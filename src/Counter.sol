@@ -1,8 +1,10 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.24;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+
 import "@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol";
+
 import "@uniswap/v2-periphery/contracts/interfaces/IWETH.sol";
 
 contract Arbitrage {
@@ -27,13 +29,30 @@ contract Arbitrage {
         uint amountIn,
         uint minProfit
     ) external onlyOwner {
-        uint amountOutUniswap = getAmountOut(uniswapRouter, tokenA, tokenB, amountIn);
-        uint amountOutAnother = getAmountOut(anotherRouter, tokenA, tokenB, amountIn);
+        uint amountOutUniswap = getAmountOut(
+            uniswapRouter,
+            tokenA,
+            tokenB,
+            amountIn
+        );
+        uint amountOutAnother = getAmountOut(
+            anotherRouter,
+            tokenA,
+            tokenB,
+            amountIn
+        );
 
-        uint maxAmountOut = amountOutUniswap > amountOutAnother ? amountOutUniswap : amountOutAnother;
-        uint minAmountOut = amountOutUniswap > amountOutAnother ? amountOutAnother : amountOutUniswap;
+        uint maxAmountOut = amountOutUniswap > amountOutAnother
+            ? amountOutUniswap
+            : amountOutAnother;
+        uint minAmountOut = amountOutUniswap > amountOutAnother
+            ? amountOutAnother
+            : amountOutUniswap;
 
-        require(maxAmountOut > minAmountOut + minProfit, "No profitable arbitrage opportunity");
+        require(
+            maxAmountOut > minAmountOut + minProfit,
+            "No profitable arbitrage opportunity"
+        );
 
         // Perform arbitrage: Buy low on one exchange and sell high on the other
         if (amountOutUniswap > amountOutAnother) {
@@ -74,7 +93,7 @@ contract Arbitrage {
         IERC20(tokenA).approve(address(router), amountIn);
         router.swapExactTokensForTokens(
             amountIn,
-            0,  // Accept any amountOut
+            0, // Accept any amountOut
             path,
             address(this),
             block.timestamp
