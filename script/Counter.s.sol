@@ -1,19 +1,14 @@
-// SPDX-License-Identifier: UNLICENSED
-pragma solidity ^0.8.13;
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.24;
 
-import {Script, console} from "forge-std/Script.sol";
-import {Counter} from "../src/Counter.sol";
+import "src/Counter.sol";
 
-contract CounterScript is Script {
-    Counter public counter;
+contract DeployArbitrage {
+    function run() external {
+        address uniswapRouter = "0x10ED43C718714eb63d5aA57B78B54704E256024E";
+        address anotherRouter = "0xC0788A3aD43d79aa53B09c2EaCc313A787d1d607";
 
-    function setUp() public {}
-
-    function run() public {
-        vm.startBroadcast();
-
-        counter = new Counter();
-
-        vm.stopBroadcast();
+        Arbitrage arbitrage = new Arbitrage(uniswapRouter, anotherRouter);
+        console.log("Arbitrage contract deployed to:", address(arbitrage));
     }
 }
