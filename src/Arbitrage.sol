@@ -3,9 +3,9 @@ pragma solidity ^0.8.24;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
-import "@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol";
+import "lib/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol";
 
-import "@uniswap/v2-periphery/contracts/interfaces/IWETH.sol";
+import "lib/v2-periphery/contracts/interfaces/IWETH.sol";
 
 contract Arbitrage {
     address public owner;
@@ -65,7 +65,7 @@ contract Arbitrage {
             swap(anotherRouter, tokenB, tokenA, amountIn);
         }
     }
-
+// @codebase
     function getAmountOut(
         IUniswapV2Router02 router,
         address tokenA,
@@ -93,7 +93,7 @@ contract Arbitrage {
         IERC20(tokenA).approve(address(router), amountIn);
         router.swapExactTokensForTokens(
             amountIn,
-            0, // Accept any amountOut
+            0, // minimum amount out
             path,
             address(this),
             block.timestamp
@@ -107,7 +107,8 @@ contract Arbitrage {
 
     // Function to withdraw ETH from the contract
     function withdrawETH(uint amount) external onlyOwner {
-        payable(msg.sender).transfer(amount);
+        (bool success, ) = payable(msg.sender).call{value: amount}("");
+        require(success, "ETH transfer failed");
     }
 
     receive() external payable {}
